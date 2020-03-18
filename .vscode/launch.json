@@ -1,0 +1,19 @@
+
+{
+  "configurations": [
+    {
+      "name": "JLink",
+      "request": "launch",
+      "type": "cortex-debug",
+      "cwd": "${workspaceFolder}",
+      "servertype": "jlink",
+      "device": "STM32F769NI",
+      "executable": "${workspaceFolder}/build/stm32f769_test.elf",
+      "rtos": "FreeRTOS",
+      "configFiles": [
+      ],
+      "svdFile": "${workspaceFolder}/STM32F769.svd",
+      "interface": "swd",
+    }
+  ]
+}

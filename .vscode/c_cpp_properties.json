@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "ARM Cortex-M7",
+            "includePath": [
+                "${env:ARM_GCC_COMPILER_DIR}/arm-none-eabi/lib/thumb/v7e-m+dp/hard",
+                "${env:ARM_GCC_COMPILER_DIR}/lib/gcc/arm-none-eabi/9.2.1/include",
+                "${env:ARM_GCC_COMPILER_DIR}/arm-none-eabi/include"
+            ],
+            "defines": [
+                "STM32F769xx"
+            ],
+            "compilerPath": "${env:ARM_GCC_COMPILER_DIR}/bin/arm-none-eabi-gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x86"
+        }
+    ],
+    "version": 4
+}
