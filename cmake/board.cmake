@@ -63,10 +63,14 @@ set(FREERTOS_src
 
 set(FREERTOS_inc ${FREERTOS_dir}/include ${FREERTOS_dir}/portable/GCC/ARM_CM7/r0p1)
 
+#LWIP
+set(LWIP_glue_dir Modules/LWIP_glue)
+set(LWIP_glue_src ${LWIP_glue_dir}/ethernetif.c ${LWIP_glue_dir}/lwip.c ${LWIP_glue_dir}/arch/sys_arch.c)
+set(LWIP_glue_inc ${LWIP_glue_dir})
 
-set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES})
+set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src})
 
-include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc})
+include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc})
 
 set(common_defs "-DSTM32F769xx" CACHE INTERNAL "")
 

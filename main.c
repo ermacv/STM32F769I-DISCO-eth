@@ -2,16 +2,32 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
+#include "stm32f769xx.h"
+#include "stm32f7xx_hal_gpio.h"
+#include "stm32f7xx_hal_rcc_ex.h"
+#include "stm32f7xx_hal_eth.h"
+#include "ethernetif.h"
+#include "lwip.h"
+
+
+ETH_HandleTypeDef heth;
 
 void SystemClock_Config(void);
 void Error_Handler(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void vTaskCode( void * pvParameters );
+void MX_ETH_Init(void);
 
 int main(void)
 {
   HAL_Init();
   SystemClock_Config();
+
+  MX_ETH_Init();
+  MX_LWIP_Init();
+
+  __HAL_RCC_ETH_CLK_ENABLE();
+
 
   BaseType_t xReturned;
   TaskHandle_t xHandle = NULL;
@@ -19,7 +35,7 @@ int main(void)
   xReturned = xTaskCreate(
                   vTaskCode,       /* Function that implements the task. */
                   "NAME",          /* Text name for the task. */
-                  256,      /* Stack size in words, not bytes. */
+                  32,      /* Stack size in words, not bytes. */
                   ( void * ) 1,    /* Parameter passed into the task. */
                   tskIDLE_PRIORITY,/* Priority at which the task is created. */
                   &xHandle );      /* Used to pass out the created task's handle. */
@@ -109,8 +125,52 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void vTaskCode( void * pvParameters )
 {
+  __HAL_RCC_GPIOJ_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  GPIO_InitTypeDef led = {0};
+
+  led.Pin = GPIO_PIN_12;
+  led.Mode = GPIO_MODE_OUTPUT_PP;
+  led.Speed = GPIO_SPEED_FREQ_LOW;
+  led.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &led);
+
+  led.Pin = GPIO_PIN_5 | GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOJ, &led);
+
+  HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_5 | GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+
   for( ;; )
   {
-    vTaskDelay(1000);
+    vTaskDelay(300);
+    HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_13);
+    vTaskDelay(300);
+    HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_5);
+    vTaskDelay(300);
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_12);
   }
+}
+
+void MX_ETH_Init(void)
+{
+  heth.Instance = ETH;
+  heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
+  heth.Init.PhyAddress = LAN8742A_PHY_ADDRESS;
+  heth.Init.MACAddr[0] =   0x00;
+  heth.Init.MACAddr[1] =   0x80;
+  heth.Init.MACAddr[2] =   0xE1;
+  heth.Init.MACAddr[3] =   0x00;
+  heth.Init.MACAddr[4] =   0x00;
+  heth.Init.MACAddr[5] =   0x00;
+  heth.Init.RxMode = ETH_RXPOLLING_MODE;
+  heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
+  heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
+
+  if (HAL_ETH_Init(&heth) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
 }
