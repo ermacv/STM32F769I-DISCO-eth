@@ -5,10 +5,10 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 
 set(COMPILER_PATH "")
 
-if(DEFINED $ENV{ARM_GCC_COMPILER_DIR})
-	message("Please provide an environment variable ARM_GCC_COMPILER_DIR\n")
-else()
+if(DEFINED ENV{ARM_GCC_COMPILER_DIR})
 	set(COMPILER_PATH $ENV{ARM_GCC_COMPILER_DIR} CACHE INTERNAL "ARM_GCC_COMPILER_DIR path")
+else()
+	message("Please provide an environment variable ARM_GCC_COMPILER_DIR\n")
 endif()
 
 SET(COMPILER_PREFIX arm-none-eabi)
