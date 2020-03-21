@@ -42,7 +42,13 @@ set(HAL_src
     ${HAL_src_dir}/${HAL_prefix}.c
 )
 
-set(FREERTOS_dir "/mnt/c/dev/lib/FreeRTOSv10.3.1/FreeRTOS/Source")
+if(DEFINED ENV{DEV_RTOS_DIR})
+    set(DEV_RTOS_dir $ENV{DEV_RTOS_DIR} CACHE INTERNAL "DEV_RTOS_DIR path")
+else()
+    message("Please provide an environment variable DEV_RTOS_DIR\n")
+endif()
+
+set(FREERTOS_dir ${DEV_RTOS_dir}/FreeRTOS/latest/FreeRTOS/Source)
 set(FREERTOS_src
     ${FREERTOS_dir}/croutine.c
     ${FREERTOS_dir}/event_groups.c
