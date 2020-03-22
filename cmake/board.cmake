@@ -65,7 +65,7 @@ set(FREERTOS_inc ${FREERTOS_dir}/include ${FREERTOS_dir}/portable/GCC/ARM_CM7/r0
 
 #LWIP
 set(LWIP_glue_dir Modules/LWIP_glue)
-set(LWIP_glue_src ${LWIP_glue_dir}/ethernetif.c ${LWIP_glue_dir}/lwip.c ${LWIP_glue_dir}/arch/sys_arch.c)
+set(LWIP_glue_src ${LWIP_glue_dir}/ethernetif.c ${LWIP_glue_dir}/lwip.c)
 set(LWIP_glue_inc ${LWIP_glue_dir})
 
 #rtt
@@ -91,11 +91,17 @@ set(RTT_inc
     ${RTT_dir}/Syscalls
 )
 
+#Lwip FreeRTOS contrib
+set(LWIP_Contrib_dir ${DEV_LIB_dir}/lwip/contrib-latest)
+set(LWIP_Contrib_FreeRTOS_port_dir ${LWIP_Contrib_dir}/ports/freertos)
+
+set(LWIP_Contrib_FreeRTOS_port_src_dir ${LWIP_Contrib_FreeRTOS_port_dir}/sys_arch.c)
+set(LWIP_Contrib_FreeRTOS_port_inc_dir ${LWIP_Contrib_FreeRTOS_port_dir}/include)
 #######################
 
-set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src} ${RTT_C_src})
+set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src} ${RTT_C_src} ${LWIP_Contrib_FreeRTOS_port_src_dir})
 set (ASM_SOURCES ${ASM_SOURCES} ${RTT_ASM_src})
-include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc} ${RTT_inc})
+include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc} ${RTT_inc} ${LWIP_Contrib_FreeRTOS_port_inc_dir})
 
 set(common_defs "-DSTM32F769xx -DLWIP_DEBUG -DETHARP_DEBUG=LWIP_DBG_ON -DDHCP_DEBUG=LWIP_DBG_ON" CACHE INTERNAL "")
 
