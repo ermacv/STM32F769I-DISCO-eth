@@ -34,14 +34,7 @@
 #include "lwip/timeouts.h"
 #include "ethernetif.h"
 #include "stm32f7xx_hal_eth.h"
-
-/* Includes for RTOS ---------------------------------------------------------*/
-#if WITH_RTOS
 #include "lwip/tcpip.h"
-#endif /* WITH_RTOS */
-
-/* Global Variables ----------------------------------------------------------*/
-extern ETH_HandleTypeDef heth;
 
 /* LWIP init function */	
 void MX_LWIP_Init(void);
