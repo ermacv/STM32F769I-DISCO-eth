@@ -9,8 +9,9 @@
 #include "ethernetif.h"
 #include "lwip.h"
 #include "SEGGER_RTT.h"
+#include "lwip/netifapi.h"
 
-
+extern struct netif gnetif;
 ETH_HandleTypeDef heth;
 
 void SystemClock_Config(void);
@@ -23,6 +24,23 @@ int main(void)
 {
   HAL_Init();
   SystemClock_Config();
+
+  __HAL_RCC_GPIOJ_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  GPIO_InitTypeDef led = {0};
+
+  led.Pin = GPIO_PIN_12;
+  led.Mode = GPIO_MODE_OUTPUT_PP;
+  led.Speed = GPIO_SPEED_FREQ_LOW;
+  led.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &led);
+
+  led.Pin = GPIO_PIN_5 | GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOJ, &led);
+
+  HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_5 | GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
 
   SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
   SEGGER_RTT_WriteString(0, "\r\nMain function started\r\n");
@@ -128,31 +146,50 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void vTaskCode( void * pvParameters )
 {
-  __HAL_RCC_GPIOJ_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
-  GPIO_InitTypeDef led = {0};
-
-  led.Pin = GPIO_PIN_12;
-  led.Mode = GPIO_MODE_OUTPUT_PP;
-  led.Speed = GPIO_SPEED_FREQ_LOW;
-  led.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &led);
-
-  led.Pin = GPIO_PIN_5 | GPIO_PIN_13;
-  HAL_GPIO_Init(GPIOJ, &led);
-
-  HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_5 | GPIO_PIN_13, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_SET);
 
   for( ;; )
   {
     vTaskDelay(300);
-    HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_13);
-    vTaskDelay(300);
-    HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_5);
-    vTaskDelay(300);
+    // HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_13);
+    // HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_5);
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_12);
+
+    
+    uint32_t regvalue = 0;
+    HAL_ETH_ReadPHYRegister(&heth, 0x01, &regvalue);
+    vTaskDelay(300);
+
+    static int link_prev_state = 0;
+    int link_curr_state = 0;
+
+    if (regvalue & (0x1 << 2))
+    {
+      link_curr_state = 1;
+    }
+
+    if (link_curr_state != link_prev_state)
+    {
+      if (link_curr_state)
+      {
+        HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_RESET);
+        // netif_set_link_up(&gnetif);
+        // tcpip_callback(netif_set_link_up, &gnetif);
+        // netifapi_netif_common(&gnetif, netif_set_link_up, &gnetif);
+        netifapi_netif_set_link_up(&gnetif);
+      }
+      else
+      {
+        HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_SET);
+        // netif_set_link_down(&gnetif);
+        // tcpip_callback(netif_set_link_down, &gnetif);
+        // netifapi_netif_common(&gnetif, netif_set_link_down, &gnetif);
+        netifapi_netif_set_link_down(&gnetif);
+      }
+      link_prev_state = link_curr_state;
+    }
+
+    vTaskDelay(3000);
   }
 }
 
