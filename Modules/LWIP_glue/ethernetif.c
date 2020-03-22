@@ -33,7 +33,8 @@
 #include "stm32f7xx_hal_def.h"
 /* Within 'USER CODE' section, code will be kept by default at each generation */
 /* USER CODE BEGIN 0 */
-
+#include "stm32f769xx.h"
+#include "stm32f7xx_hal_gpio.h"
 /* USER CODE END 0 */
 
 /* Private define ------------------------------------------------------------*/
@@ -41,7 +42,7 @@
 #define TIME_WAITING_FOR_INPUT ( portMAX_DELAY )
 /* USER CODE BEGIN OS_THREAD_STACK_SIZE_WITH_RTOS */
 /* Stack size of the interface thread */
-#define INTERFACE_THREAD_STACK_SIZE ( 350 )
+#define INTERFACE_THREAD_STACK_SIZE ( 4096 )
 /* USER CODE END OS_THREAD_STACK_SIZE_WITH_RTOS */
 /* Network interface name */
 #define IFNAME0 's'
@@ -114,7 +115,9 @@ SemaphoreHandle_t s_xSemaphore = NULL;
 ETH_HandleTypeDef heth;
 
 /* USER CODE BEGIN 3 */
-
+#if LWIP_NETIF_LINK_CALLBACK
+void ethernetif_update_config(struct netif *netif);
+#endif
 /* USER CODE END 3 */
 
 /* Private functions ---------------------------------------------------------*/
@@ -628,14 +631,14 @@ err_t ethernetif_init(struct netif *netif)
 #endif /* LWIP_IPV6 */
 
   netif->linkoutput = low_level_output;
-
+#if LWIP_NETIF_LINK_CALLBACK
+  netif_set_link_callback(netif, ethernetif_update_config);
+#endif
   /* initialize the hardware */
   low_level_init(netif);
 
   return ERR_OK;
 }
-
-/* USER CODE BEGIN 6 */
 
 /**
 * @brief  Returns the current time in milliseconds
@@ -733,7 +736,6 @@ void ethernetif_update_config(struct netif *netif)
   ethernetif_notify_conn_changed(netif);
 }
 
-/* USER CODE BEGIN 8 */
 /**
   * @brief  This function notify user about link status changement.
   * @param  netif: the network interface
@@ -746,11 +748,6 @@ __weak void ethernetif_notify_conn_changed(struct netif *netif)
   */
 
 }
-/* USER CODE END 8 */ 
 #endif /* LWIP_NETIF_LINK_CALLBACK */
-
-/* USER CODE BEGIN 9 */
-
-/* USER CODE END 9 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
