@@ -26,14 +26,6 @@
  extern "C" {
 #endif
 
-/* STM32CubeMX Specific Parameters (not defined in opt.h) ---------------------*/
-/* Parameters set in STM32CubeMX LwIP Configuration GUI -*/
-/*----- WITH_RTOS enabled (Since FREERTOS is set) -----*/
-#define WITH_RTOS 1
-/*----- CHECKSUM_BY_HARDWARE disabled -----*/
-#define CHECKSUM_BY_HARDWARE 0
-/*-----------------------------------------------------------------------------*/
-
 /* LwIP Stack Parameters (modified compared to initialization value in opt.h) -*/
 /* Parameters set in STM32CubeMX LwIP Configuration GUI -*/
 /*----- Value in opt.h for LWIP_DHCP: 0 -----*/
@@ -100,12 +92,13 @@
 #define CHECKSUM_CHECK_ICMP6 0
 
 //Debug defines
+#define NETIF_DEBUG  LWIP_DBG_ON
 #define ETHARP_DEBUG (LWIP_DBG_ON)
 #define DHCP_DEBUG (LWIP_DBG_ON)
-/*-----------------------------------------------------------------------------*/
-/* USER CODE BEGIN 1 */
 
-/* USER CODE END 1 */
+// #define LWIP_NETIF_LINK_CALLBACK 1
+#define LWIP_NETIF_API 1
+/*-----------------------------------------------------------------------------*/
 
 #ifdef __cplusplus
 }
