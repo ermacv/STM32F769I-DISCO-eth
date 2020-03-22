@@ -133,6 +133,9 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef* ethHandle)
     GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* Peripheral interrupt init */
+    HAL_NVIC_SetPriority(ETH_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(ETH_IRQn);
   /* USER CODE BEGIN ETH_MspInit 1 */
 
   /* USER CODE END ETH_MspInit 1 */
@@ -165,6 +168,9 @@ void HAL_ETH_MspDeInit(ETH_HandleTypeDef* ethHandle)
     HAL_GPIO_DeInit(GPIOC, RMII_MDC_Pin|RMII_RXD0_Pin|RMII_RXD1_Pin);
 
     HAL_GPIO_DeInit(GPIOA, RMII_REF_CLK_Pin|RMII_MDIO_Pin|RMII_CRS_DV_Pin);
+
+    /* Peripheral interrupt Deinit*/
+    HAL_NVIC_DisableIRQ(ETH_IRQn);
 
   /* USER CODE BEGIN ETH_MspDeInit 1 */
 
@@ -609,27 +615,6 @@ err_t ethernetif_init(struct netif *netif)
 * @param  None
 * @retval Time
 */
-u32_t sys_jiffies(void)
-{
-  return HAL_GetTick();
-}
-
-/**
-* @brief  Returns the current time in milliseconds
-*         when LWIP_TIMERS == 1 and NO_SYS == 1
-* @param  None
-* @retval Time
-*/
-u32_t sys_now(void)
-{
-  return HAL_GetTick();
-}
-
-/* USER CODE END 6 */
-
-/* USER CODE BEGIN 7 */
-
-/* USER CODE END 7 */
 
 #if LWIP_NETIF_LINK_CALLBACK
 /**
