@@ -20,6 +20,7 @@
 #include "stm32f7xx_it.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_tim.h"
+#include "stm32f7xx_hal_eth.h"
 /* Private includes ----------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -29,6 +30,7 @@
 /* Private user code ---------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim14;
+extern ETH_HandleTypeDef heth;
 
 /******************************************************************************/
 /*           Cortex-M7 Processor Interruption and Exception Handlers          */ 
@@ -114,10 +116,7 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
 void ETH_IRQHandler(void)
 {
   // HAL_ETH_IRQHandler(&heth);
-  while (1)
-  {
-
-  }
+  HAL_ETH_IRQHandler(&heth);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
