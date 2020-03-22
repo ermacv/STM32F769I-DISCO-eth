@@ -8,6 +8,7 @@
 #include "stm32f7xx_hal_eth.h"
 #include "ethernetif.h"
 #include "lwip.h"
+#include "SEGGER_RTT.h"
 
 
 ETH_HandleTypeDef heth;
@@ -23,10 +24,12 @@ int main(void)
   HAL_Init();
   SystemClock_Config();
 
+  SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+  SEGGER_RTT_WriteString(0, "\r\nMain function started\r\n");
+
   MX_ETH_Init();
   MX_LWIP_Init();
 
-  __HAL_RCC_ETH_CLK_ENABLE();
 
 
   BaseType_t xReturned;
