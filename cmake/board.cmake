@@ -68,11 +68,36 @@ set(LWIP_glue_dir Modules/LWIP_glue)
 set(LWIP_glue_src ${LWIP_glue_dir}/ethernetif.c ${LWIP_glue_dir}/lwip.c ${LWIP_glue_dir}/arch/sys_arch.c)
 set(LWIP_glue_inc ${LWIP_glue_dir})
 
-set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src})
+#rtt
+if(DEFINED ENV{DEV_LIB_DIR})
+    set(DEV_LIB_dir $ENV{DEV_LIB_DIR} CACHE INTERNAL "DEV_LIB_DIR path")
+else()
+    message("Please provide an environment variable DEV_LIB_DIR\n")
+endif()
 
-include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc})
+set(RTT_dir ${DEV_LIB_dir}/segger-rtt/SEGGER_RTT_latest)
+set(RTT_C_src
+    ${RTT_dir}/RTT/SEGGER_RTT.c
+    ${RTT_dir}/RTT/SEGGER_RTT_printf.c
+    # ${RTT_dir}/Syscalls/SEGGER_RTT_Syscalls_GCC.c
+)
 
-set(common_defs "-DSTM32F769xx" CACHE INTERNAL "")
+set(RTT_ASM_src
+    ${RTT_dir}/RTT/SEGGER_RTT_ASM_ARMv7M.S
+)
+
+set(RTT_inc
+    ${RTT_dir}/RTT
+    ${RTT_dir}/Syscalls
+)
+
+#######################
+
+set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src} ${RTT_C_src})
+set (ASM_SOURCES ${ASM_SOURCES} ${RTT_ASM_src})
+include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc} ${RTT_inc})
+
+set(common_defs "-DSTM32F769xx -DLWIP_DEBUG -DETHARP_DEBUG=LWIP_DBG_ON -DDHCP_DEBUG=LWIP_DBG_ON" CACHE INTERNAL "")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${common_defs}" CACHE INTERNAL "")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${common_defs}" CACHE INTERNAL "")
