@@ -115,7 +115,6 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
   */
 void ETH_IRQHandler(void)
 {
-  // HAL_ETH_IRQHandler(&heth);
   HAL_ETH_IRQHandler(&heth);
 }
 
