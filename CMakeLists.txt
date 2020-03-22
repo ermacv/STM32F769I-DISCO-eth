@@ -32,7 +32,7 @@ include_directories(${LWIP_LATEST_dir}/src/include)
 add_subdirectory(${LWIP_LATEST_dir} "build/lwip_build")
 
 # include(${LWIP_LATEST_dir}/CMakeLists.txt)
-target_link_libraries(${CMAKE_PROJECT_NAME}.elf lwipcore)
+target_link_libraries(${CMAKE_PROJECT_NAME}.elf lwipcore lwipallapps)
 
 
 ADD_CUSTOM_COMMAND(TARGET ${CMAKE_PROJECT_NAME}.elf POST_BUILD COMMAND ${CMAKE_OBJCOPY} ARGS -Oihex ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.hex)
