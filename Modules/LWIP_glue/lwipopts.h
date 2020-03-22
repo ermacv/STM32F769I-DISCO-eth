@@ -22,16 +22,6 @@
 #ifndef __LWIPOPTS__H__
 #define __LWIPOPTS__H__
 
-
-/*-----------------------------------------------------------------------------*/
-/* Current version of LwIP supported by CubeMx: 2.1.2 -*/
-/*-----------------------------------------------------------------------------*/
-
-/* Within 'USER CODE' section, code will be kept by default at each generation */
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -108,6 +98,10 @@
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
+
+//Debug defines
+#define ETHARP_DEBUG (LWIP_DBG_ON)
+#define DHCP_DEBUG (LWIP_DBG_ON)
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 
