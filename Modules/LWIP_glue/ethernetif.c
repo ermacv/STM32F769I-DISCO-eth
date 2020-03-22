@@ -48,7 +48,39 @@
 #define IFNAME1 't'
 
 /* USER CODE BEGIN 1 */
+//
+#define RMII_MDIO_Pin GPIO_PIN_2
+#define RMII_MDIO_GPIO_Port GPIOA
 
+#define RMII_MDC_Pin GPIO_PIN_1
+#define RMII_MDC_GPIO_Port GPIOC
+
+//
+#define RMII_TXD0_Pin GPIO_PIN_13
+#define RMII_TXD0_GPIO_Port GPIOG
+
+#define RMII_TXD1_Pin GPIO_PIN_14
+#define RMII_TXD1_GPIO_Port GPIOG
+
+//
+#define RMII_RXD0_Pin GPIO_PIN_4
+#define RMII_RXD0_GPIO_Port GPIOC
+
+#define RMII_RXD1_Pin GPIO_PIN_5
+#define RMII_RXD1_GPIO_Port GPIOC
+
+//
+#define RMII_TX_EN_Pin GPIO_PIN_11
+#define RMII_TX_EN_GPIO_Port GPIOG
+
+#define RMII_RXER_Pin GPIO_PIN_5
+#define RMII_RXER_GPIO_Port GPIOD
+
+#define RMII_REF_CLK_Pin GPIO_PIN_1
+#define RMII_REF_CLK_GPIO_Port GPIOA
+
+#define RMII_CRS_DV_Pin GPIO_PIN_7
+#define RMII_CRS_DV_GPIO_Port GPIOA
 /* USER CODE END 1 */
 
 /* Private variables ---------------------------------------------------------*/
@@ -275,9 +307,7 @@ static void low_level_init(struct netif *netif)
 
 /* create the task that handles the ETH_MAC */
 /* USER CODE BEGIN OS_THREAD_DEF_CREATE_CMSIS_RTOS_V1 */
-// BaseType_t xReturned;
 TaskHandle_t xHandle = NULL;
-// xTaskCreate()
 
   xTaskCreate(
                     (void  *)ethernetif_input,       /* Function that implements the task. */
@@ -287,8 +317,6 @@ TaskHandle_t xHandle = NULL;
                     3,/* Priority at which the task is created. */
                     &xHandle ); 
 
-  // osThreadDef(EthIf, ethernetif_input, osPriorityRealtime, 0, INTERFACE_THREAD_STACK_SIZE);
-  // osThreadCreate (osThread(EthIf), netif);
 /* USER CODE END OS_THREAD_DEF_CREATE_CMSIS_RTOS_V1 */  
   /* Enable MAC and DMA transmission and reception */
   HAL_ETH_Start(&heth);

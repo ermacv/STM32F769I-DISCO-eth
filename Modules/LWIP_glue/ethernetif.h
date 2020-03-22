@@ -16,64 +16,17 @@
   *
   ******************************************************************************
   */
-  
 
 #ifndef __ETHERNETIF_H__
 #define __ETHERNETIF_H__
 
 #include "lwip/err.h"
 #include "lwip/netif.h"
-// #include "cmsis_os.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "queue.h"
 #include "task.h"
 
-/* Exported types ------------------------------------------------------------*/
-/* Structure that include link thread parameters */
-struct link_str {
-  struct netif *netif;
-  SemaphoreHandle_t semaphore;
-};
-
-/* Within 'USER CODE' section, code will be kept by default at each generation */
-/* USER CODE BEGIN 0 */
-//
-#define RMII_MDIO_Pin GPIO_PIN_2
-#define RMII_MDIO_GPIO_Port GPIOA
-
-#define RMII_MDC_Pin GPIO_PIN_1
-#define RMII_MDC_GPIO_Port GPIOC
-
-//
-#define RMII_TXD0_Pin GPIO_PIN_13
-#define RMII_TXD0_GPIO_Port GPIOG
-
-#define RMII_TXD1_Pin GPIO_PIN_14
-#define RMII_TXD1_GPIO_Port GPIOG
-
-//
-#define RMII_RXD0_Pin GPIO_PIN_4
-#define RMII_RXD0_GPIO_Port GPIOC
-
-#define RMII_RXD1_Pin GPIO_PIN_5
-#define RMII_RXD1_GPIO_Port GPIOC
-
-//
-#define RMII_TX_EN_Pin GPIO_PIN_11
-#define RMII_TX_EN_GPIO_Port GPIOG
-
-#define RMII_RXER_Pin GPIO_PIN_5
-#define RMII_RXER_GPIO_Port GPIOD
-
-#define RMII_REF_CLK_Pin GPIO_PIN_1
-#define RMII_REF_CLK_GPIO_Port GPIOA
-
-#define RMII_CRS_DV_Pin GPIO_PIN_7
-#define RMII_CRS_DV_GPIO_Port GPIOA
-/* USER CODE END 0 */
-
-/* Exported functions ------------------------------------------------------- */
 err_t ethernetif_init(struct netif *netif);
 
 void ethernetif_input(void const * argument);
@@ -81,12 +34,6 @@ void ethernetif_set_link(void const *argument);
 void ethernetif_update_config(struct netif *netif);
 void ethernetif_notify_conn_changed(struct netif *netif);
 
-u32_t sys_jiffies(void);
-u32_t sys_now(void);
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
 #endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
