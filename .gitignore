@@ -1,6 +1,9 @@
+# Default build output directory
 build/
+# Ignore VSCode .json config files except C config, build tasks and debug launch
 .vscode/**
 !.vscode/launch.json
 !.vscode/tasks.json
 !.vscode/c_cpp_properties.json
+# VSCode workspace file
 *.code-workspace
