@@ -13,8 +13,7 @@
                 "${workspaceFolder}/Modules/HAL_user/inc"
             ],
             "defines": [
-                "STM32F769xx",
-                "USE_HAL_DRIVER"
+                "STM32F769xx"
             ],
             "compilerPath": "${env:ARM_GCC_COMPILER_DIR}/bin/arm-none-eabi-gcc",
             "cStandard": "c99",

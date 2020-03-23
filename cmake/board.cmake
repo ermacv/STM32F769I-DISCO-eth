@@ -103,7 +103,7 @@ set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src} ${RTT_C_s
 set (ASM_SOURCES ${ASM_SOURCES} ${RTT_ASM_src})
 include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc} ${RTT_inc} ${LWIP_Contrib_FreeRTOS_port_inc_dir})
 
-set(common_defs "-DSTM32F769xx -DLWIP_DEBUG -DUSE_HAL_DRIVER" CACHE INTERNAL "")
+set(common_defs "-DSTM32F769xx -DLWIP_DEBUG" CACHE INTERNAL "")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${common_defs}" CACHE INTERNAL "")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${common_defs}" CACHE INTERNAL "")
