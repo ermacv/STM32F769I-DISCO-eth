@@ -21,7 +21,7 @@ else()
     message("Please provide an environment variable DEV_LIB_DIR\n")
 endif()
 
-set(LWIP_LATEST_dir ${LIB_LWIP_dir}/lwip/latest)
+set(LWIP_LATEST_dir ${LIB_LWIP_dir}/lwip-latest)
 set(LWIP_LATEST_src ${LWIP_LATEST_dir}/src)
 
 # Filelists.cmake

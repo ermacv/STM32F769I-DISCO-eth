@@ -48,7 +48,7 @@ else()
     message("Please provide an environment variable DEV_RTOS_DIR\n")
 endif()
 
-set(FREERTOS_dir ${DEV_RTOS_dir}/FreeRTOS/latest/FreeRTOS/Source)
+set(FREERTOS_dir ${DEV_RTOS_dir}/FreeRTOS-latest/FreeRTOS/Source)
 set(FREERTOS_src
     ${FREERTOS_dir}/croutine.c
     ${FREERTOS_dir}/event_groups.c
@@ -75,7 +75,7 @@ else()
     message("Please provide an environment variable DEV_LIB_DIR\n")
 endif()
 
-set(RTT_dir ${DEV_LIB_dir}/segger-rtt/SEGGER_RTT_latest)
+set(RTT_dir ${DEV_LIB_dir}/SEGGER_RTT-latest)
 set(RTT_C_src
     ${RTT_dir}/RTT/SEGGER_RTT.c
     ${RTT_dir}/RTT/SEGGER_RTT_printf.c
@@ -92,7 +92,7 @@ set(RTT_inc
 )
 
 #Lwip FreeRTOS contrib
-set(LWIP_Contrib_dir ${DEV_LIB_dir}/lwip/contrib-latest)
+set(LWIP_Contrib_dir ${DEV_LIB_dir}/lwip-contrib-latest)
 set(LWIP_Contrib_FreeRTOS_port_dir ${LWIP_Contrib_dir}/ports/freertos)
 
 set(LWIP_Contrib_FreeRTOS_port_src_dir ${LWIP_Contrib_FreeRTOS_port_dir}/sys_arch.c)
