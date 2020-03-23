@@ -5,7 +5,12 @@
             "includePath": [
                 "${env:ARM_GCC_COMPILER_DIR}/arm-none-eabi/lib/thumb/v7e-m+dp/hard",
                 "${env:ARM_GCC_COMPILER_DIR}/lib/gcc/arm-none-eabi/9.2.1/include",
-                "${env:ARM_GCC_COMPILER_DIR}/arm-none-eabi/include"
+                "${env:ARM_GCC_COMPILER_DIR}/arm-none-eabi/include",
+                "${workspaceFolder}/Drivers/CMSIS/Core/Include",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F7xx/Include",
+                "${workspaceFolder}/Drivers/STM32F7xx_HAL_Driver/Inc",
+                "${workspaceFolder}",
+                "${workspaceFolder}/Modules/HAL_user/inc"
             ],
             "defines": [
                 "STM32F769xx"
