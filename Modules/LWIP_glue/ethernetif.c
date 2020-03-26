@@ -27,7 +27,7 @@
 #include "lwip/ethip6.h"
 #include "ethernetif.h"
 #include <string.h>
-// #include "cmsis_os.h"
+#include "cmsis_os.h"
 #include "lwip/tcpip.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_def.h"
@@ -110,7 +110,7 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 /* USER CODE END 2 */
 
 /* Semaphore to signal incoming packets */
-SemaphoreHandle_t s_xSemaphore = NULL;
+osSemaphoreId s_xSemaphore = NULL;
 /* Global Ethernet handle */
 ETH_HandleTypeDef heth;
 
@@ -220,10 +220,7 @@ void HAL_ETH_MspDeInit(ETH_HandleTypeDef* ethHandle)
   */
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 {
-  // osSemaphoreRelease(s_xSemaphore);
-  portBASE_TYPE taskWoken = pdFALSE;
-  xSemaphoreGiveFromISR(s_xSemaphore, &taskWoken);
-  
+  osSemaphoreRelease(s_xSemaphore);
 }
 
 /* USER CODE BEGIN 4 */
@@ -304,9 +301,7 @@ static void low_level_init(struct netif *netif)
   #endif /* LWIP_ARP */
   
 /* create a binary semaphore used for informing ethernetif of frame reception */
-  // osSemaphoreDef(SEM);
-  s_xSemaphore = xSemaphoreCreateBinary();
-  // s_xSemaphore = osSemaphoreCreate(osSemaphore(SEM), 1);
+  s_xSemaphore = osSemaphoreNew(1, 1, NULL);
 
 /* create the task that handles the ETH_MAC */
 /* USER CODE BEGIN OS_THREAD_DEF_CREATE_CMSIS_RTOS_V1 */
@@ -425,7 +420,7 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
   
   /* Prepare transmit descriptors to give to DMA */ 
   HAL_ETH_TransmitFrame(&heth, framelength);
-  
+
   errval = ERR_OK;
   
 error:
@@ -547,7 +542,7 @@ void ethernetif_input(void const * argument)
   
   for( ;; )
   {
-    if (xSemaphoreTake(s_xSemaphore, TIME_WAITING_FOR_INPUT) == pdTRUE )
+    if (osSemaphoreAcquire(s_xSemaphore, TIME_WAITING_FOR_INPUT) == osOK)
     {
       do
       {   
