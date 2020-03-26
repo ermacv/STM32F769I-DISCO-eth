@@ -12,13 +12,12 @@
 #include "lwip/netifapi.h"
 
 extern struct netif gnetif;
-ETH_HandleTypeDef heth;
+extern ETH_HandleTypeDef heth;
 
 void SystemClock_Config(void);
 void Error_Handler(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void vTaskCode( void * pvParameters );
-void MX_ETH_Init(void);
 
 int main(void)
 {
@@ -45,7 +44,6 @@ int main(void)
   SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
   SEGGER_RTT_WriteString(0, "\r\nMain function started\r\n");
 
-  MX_ETH_Init();
   MX_LWIP_Init();
 
 
@@ -56,7 +54,7 @@ int main(void)
   xReturned = xTaskCreate(
                   vTaskCode,       /* Function that implements the task. */
                   "NAME",          /* Text name for the task. */
-                  32,      /* Stack size in words, not bytes. */
+                  512,      /* Stack size in words, not bytes. */
                   ( void * ) 1,    /* Parameter passed into the task. */
                   tskIDLE_PRIORITY,/* Priority at which the task is created. */
                   &xHandle );      /* Used to pass out the created task's handle. */
@@ -150,11 +148,7 @@ void vTaskCode( void * pvParameters )
 
   for( ;; )
   {
-    vTaskDelay(300);
-    // HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_13);
-    // HAL_GPIO_TogglePin(GPIOJ, GPIO_PIN_5);
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_12);
-
     
     uint32_t regvalue = 0;
     HAL_ETH_ReadPHYRegister(&heth, 0x01, &regvalue);
@@ -170,47 +164,28 @@ void vTaskCode( void * pvParameters )
 
     if (link_curr_state != link_prev_state)
     {
-      if (link_curr_state)
+      uint8_t lwip_state = netif_is_link_up(&gnetif);
+
+      SEGGER_RTT_printf(0, "link_curr_state = %d, link_prev_state = %d, lwip_state = %d", link_curr_state, link_prev_state, lwip_state);
+
+      if (lwip_state != link_curr_state)
       {
-        HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_RESET);
-        // netif_set_link_up(&gnetif);
-        // tcpip_callback(netif_set_link_up, &gnetif);
-        // netifapi_netif_common(&gnetif, netif_set_link_up, &gnetif);
-        netifapi_netif_set_link_up(&gnetif);
-      }
-      else
-      {
-        HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_SET);
-        // netif_set_link_down(&gnetif);
-        // tcpip_callback(netif_set_link_down, &gnetif);
-        // netifapi_netif_common(&gnetif, netif_set_link_down, &gnetif);
-        netifapi_netif_set_link_down(&gnetif);
+        if (link_curr_state)
+        {
+          HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_RESET);
+          netifapi_netif_set_link_up(&gnetif);
+          HAL_ETH_Start(&heth);
+          HAL_NVIC_EnableIRQ(ETH_IRQn);
+        }
+        else
+        {
+          HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_SET);
+          HAL_NVIC_DisableIRQ(ETH_IRQn);
+          HAL_ETH_Stop(&heth);
+          netifapi_netif_set_link_down(&gnetif);
+        }
       }
       link_prev_state = link_curr_state;
     }
-
-    vTaskDelay(3000);
   }
-}
-
-void MX_ETH_Init(void)
-{
-  heth.Instance = ETH;
-  heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
-  heth.Init.PhyAddress = LAN8742A_PHY_ADDRESS;
-  heth.Init.MACAddr[0] =   0x00;
-  heth.Init.MACAddr[1] =   0x80;
-  heth.Init.MACAddr[2] =   0xE1;
-  heth.Init.MACAddr[3] =   0x00;
-  heth.Init.MACAddr[4] =   0x00;
-  heth.Init.MACAddr[5] =   0x00;
-  heth.Init.RxMode = ETH_RXPOLLING_MODE;
-  heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
-  heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
-
-  if (HAL_ETH_Init(&heth) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
 }
