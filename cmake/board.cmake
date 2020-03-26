@@ -99,9 +99,15 @@ set(LWIP_Contrib_FreeRTOS_port_src_dir ${LWIP_Contrib_FreeRTOS_port_dir}/sys_arc
 set(LWIP_Contrib_FreeRTOS_port_inc_dir ${LWIP_Contrib_FreeRTOS_port_dir}/include)
 #######################
 
-set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src} ${RTT_C_src} ${LWIP_Contrib_FreeRTOS_port_src_dir})
+
+#OSAL CMSIS RTOS2
+set(CMSIS_RTOS_2_dir Modules/CMSIS_RTOS_V2)
+set(CMSIS_RTOS_2_src ${CMSIS_RTOS_2_dir}/cmsis_os2.c)
+set(CMSIS_RTOS_2_inc ${CMSIS_RTOS_2_dir})
+
+set(C_SOURCES ${FREERTOS_src} ${HAL_src} ${C_SOURCES} ${LWIP_glue_src} ${RTT_C_src} ${LWIP_Contrib_FreeRTOS_port_src_dir} ${CMSIS_RTOS_2_src})
 set (ASM_SOURCES ${ASM_SOURCES} ${RTT_ASM_src})
-include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc} ${RTT_inc} ${LWIP_Contrib_FreeRTOS_port_inc_dir})
+include_directories(${C_INCLUDES} ${AS_INCLUDES} ${HAL_inc_dir} ${FREERTOS_inc} ${LWIP_glue_inc} ${RTT_inc} ${LWIP_Contrib_FreeRTOS_port_inc_dir} ${CMSIS_RTOS_2_inc})
 
 set(common_defs "-DSTM32F769xx -DLWIP_DEBUG" CACHE INTERNAL "")
 
