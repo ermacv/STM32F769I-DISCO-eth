@@ -974,6 +974,10 @@ HAL_StatusTypeDef HAL_ETH_TransmitFrame(ETH_HandleTypeDef *heth, uint32_t FrameL
       heth->TxDesc = (ETH_DMADescTypeDef *)(heth->TxDesc->Buffer2NextDescAddr);
     }
   }
+
+  //For some reasons driver doesn't send current packet.
+  //It sends only after sending another packet ()
+  __DSB();
   
   /* When Tx Buffer unavailable flag is set: clear it and resume transmission */
   if (((heth->Instance)->DMASR & ETH_DMASR_TBUS) != (uint32_t)RESET)
