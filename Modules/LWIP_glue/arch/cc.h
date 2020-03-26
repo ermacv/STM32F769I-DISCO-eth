@@ -35,6 +35,7 @@
 #include "cpu.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "SEGGER_RTT.h"
 
 #define LWIP_PROVIDE_ERRNO
 
@@ -77,8 +78,41 @@
 
 #endif
 
-#define LWIP_PLATFORM_ASSERT(x) do {printf("Assertion \"%s\" failed at line %d in %s\n", \
-                                     x, __LINE__, __FILE__); } while(0)
+#define LWIP_NO_STDINT_H    1
+typedef unsigned char    u8_t;
+typedef signed char      s8_t;
+typedef unsigned short   u16_t;
+typedef signed short     s16_t;
+typedef unsigned long    u32_t;
+typedef signed long      s32_t;
+
+typedef size_t           mem_ptr_t;
+typedef u32_t            sys_prot_t;
+
+/* Define (sn)printf formatters for these lwIP types */
+#define X8_F     "02x"
+#define U16_F    "hu"
+#define S16_F    "hd"
+#define X16_F    "hx"
+#define U32_F    "lu"
+#define S32_F    "ld"
+#define X32_F    "lx"
+#define SZT_F    U32_F
+
+#define SEGGER_PRINT(fmt,...)   SEGGER_RTT_printf(0,fmt,##__VA_ARGS__)
+#define LWIP_PLATFORM_DIAG(x) do {SEGGER_PRINT x;} while(0)
+
+
+#define LWIP_PLATFORM_ASSERT( x )                                      \
+    do { SEGGER_RTT_printf( 0, "Assertion \"%s\" failed at line %d in %s\n", \
+                         x, __LINE__, __FILE__ ) ; fflush( NULL ); abort(); } while( 0 )
+
+
+#define LWIP_ERROR( message, expression, handler )                                                          \
+    do { if( !( expression ) ) {                                                                            \
+             SEGGER_RTT_printf( 0, "Assertion \"%s\" failed at line %d in %s\n", message, __LINE__, __FILE__ ) ; \
+             handler; }                                                                                     \
+    } while( 0 )
 
 /* Define random number generator function */
 #define LWIP_RAND() ((u32_t)rand())
