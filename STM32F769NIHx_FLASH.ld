@@ -61,7 +61,8 @@ _Min_Stack_Size = 0x800; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 512K
+RAM_NON_CACHEABLE (xrw): ORIGIN = 0x20000000, LENGTH = 64K
+RAM (xrw)      : ORIGIN = 0x20010000, LENGTH = 448K
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
@@ -133,6 +134,31 @@ SECTIONS
   /* used by the startup to initialize data */
   _sidata = LOADADDR(.data);
 
+
+  .non_cached_ram :
+  {
+    _sbss = .;         /* define a global symbol at bss start */
+    __bss_start__ = _sbss;
+    *(._non_cached_ram)
+    *(._non_cached_ram*) /* keep my variable even if not referenced */
+  } >RAM_NON_CACHEABLE
+
+
+  /* Uninitialized data section */
+  . = ALIGN(4);
+  .bss :
+  {
+    /* This is used by the startup in order to initialize the .bss secion */
+    
+    *(.bss)
+    *(.bss*)
+    *(COMMON)
+
+    . = ALIGN(4);
+    _ebss = .;         /* define a global symbol at bss end */
+    __bss_end__ = _ebss;
+  } >RAM
+
   /* Initialized data sections goes into RAM, load LMA copy after code */
   .data : 
   {
@@ -146,22 +172,6 @@ SECTIONS
   } >RAM AT> FLASH
 
   
-  /* Uninitialized data section */
-  . = ALIGN(4);
-  .bss :
-  {
-    /* This is used by the startup in order to initialize the .bss secion */
-    _sbss = .;         /* define a global symbol at bss start */
-    __bss_start__ = _sbss;
-    *(.bss)
-    *(.bss*)
-    *(COMMON)
-
-    . = ALIGN(4);
-    _ebss = .;         /* define a global symbol at bss end */
-    __bss_end__ = _ebss;
-  } >RAM
-
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
   {
