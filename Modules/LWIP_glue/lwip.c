@@ -38,10 +38,9 @@ void MX_LWIP_Init(void)
   /* Initilialize the LwIP stack with RTOS */
   tcpip_init( NULL, NULL );
 
-  /* IP addresses initialization with DHCP (IPv4) */
-  ipaddr.addr = 0;
-  netmask.addr = 0;
-  gw.addr = 0;
+  IP4_ADDR(&ipaddr, 192, 168, 0, 102);
+  IP4_ADDR(&netmask, 255, 255, 255, 0);
+  IP4_ADDR(&gw, 192, 168, 0, 100);
 
   /* add the network interface (IPv4/IPv6) with RTOS */
   netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &tcpip_input);
@@ -59,9 +58,6 @@ void MX_LWIP_Init(void)
     /* When the netif link is down this function must be called */
     netif_set_down(&gnetif);
   }
-
-  /* Start DHCP negotiation for a network interface (IPv4) */
-  dhcp_start(&gnetif);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
