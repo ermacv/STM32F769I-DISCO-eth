@@ -65,7 +65,8 @@ RAM (xrw)        : ORIGIN = 0x20000000, LENGTH = 499K
 Memory_B1(xrw)   : ORIGIN = 0x2007C000, LENGTH = 0x80
 Memory_B2(xrw)   : ORIGIN = 0x2007C080, LENGTH = 0x80
 Memory_B3(xrw)   : ORIGIN = 0x2007C100, LENGTH = 0x17d0 
-Memory_B4(xrw)   : ORIGIN = 0x2007D8D0, LENGTH = 0x17d0 
+Memory_B4(xrw)   : ORIGIN = 0x2007D8D0, LENGTH = 0x17d0
+Memory_B5(xrw)   : ORIGIN = 0x2007F0A0, LENGTH = 0xf60
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
@@ -193,6 +194,7 @@ SECTIONS
   .TxDescripSection : { *(.DMATxDscrTab_section) } >Memory_B2
   .RxarraySection : { *(.Rx_Buff_section) } >Memory_B3
   .TxarraySection : { *(.Tx_Buff_section) } >Memory_B4
+  ._non_cached_ram : { *(._non_cached_ram) } >Memory_B5
 }
 
 
