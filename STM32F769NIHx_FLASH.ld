@@ -61,8 +61,11 @@ _Min_Stack_Size = 0x800; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-RAM_NON_CACHEABLE (xrw): ORIGIN = 0x20000000, LENGTH = 64K
-RAM (xrw)      : ORIGIN = 0x20010000, LENGTH = 448K
+RAM (xrw)        : ORIGIN = 0x20000000, LENGTH = 499K
+Memory_B1(xrw)   : ORIGIN = 0x2007C000, LENGTH = 0x80
+Memory_B2(xrw)   : ORIGIN = 0x2007C080, LENGTH = 0x80
+Memory_B3(xrw)   : ORIGIN = 0x2007C100, LENGTH = 0x17d0 
+Memory_B4(xrw)   : ORIGIN = 0x2007D8D0, LENGTH = 0x17d0 
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
@@ -134,22 +137,13 @@ SECTIONS
   /* used by the startup to initialize data */
   _sidata = LOADADDR(.data);
 
-
-  .non_cached_ram :
-  {
-    _sbss = .;         /* define a global symbol at bss start */
-    __bss_start__ = _sbss;
-    *(._non_cached_ram)
-    *(._non_cached_ram*) /* keep my variable even if not referenced */
-  } >RAM_NON_CACHEABLE
-
-
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
   {
     /* This is used by the startup in order to initialize the .bss secion */
-    
+    _sbss = .;         /* define a global symbol at bss start */
+    __bss_start__ = _sbss;
     *(.bss)
     *(.bss*)
     *(COMMON)
@@ -183,7 +177,7 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-  
+
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
@@ -194,6 +188,11 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
+
+  .RxDecripSection : { *(.DMARxDscrTab_section) } >Memory_B1
+  .TxDescripSection : { *(.DMATxDscrTab_section) } >Memory_B2
+  .RxarraySection : { *(.Rx_Buff_section) } >Memory_B3
+  .TxarraySection : { *(.Tx_Buff_section) } >Memory_B4
 }
 
 
